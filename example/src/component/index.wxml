@@ -1,0 +1,2 @@
+<view >component current: {{storeData}}</view>
+<button bindtap="onTap">componet change value</button>

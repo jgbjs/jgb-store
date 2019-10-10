@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "module": "commonjs",
+    "target": "es5",
+    "declarationMap": false,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "downlevelIteration": true,
+    "moduleResolution": "node",
+    "lib": [
+      "es7",
+      "dom",
+      "esnext"
+    ],
+    "paths": {
+      "tslib": [
+        "node_modules/tslib/tslib.d.ts"
+      ]
+    },
+    "outDir": "./lib/",
+    "baseUrl": "src",
+    // "strict": true,
+    // "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "declaration": false,
+    "sourceMap": false,
+    "inlineSourceMap": false,
+    // "typeRoots": [
+    //   "./node_modules/@types",
+    //   "./types"
+    // ]
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

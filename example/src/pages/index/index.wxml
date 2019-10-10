@@ -1,0 +1,4 @@
+<view>current: {{storeData}}</view>
+<button bindtap="onTap">page change value</button>
+<comp></comp>
+<button bindtap="toSamePage">to same page</button>
