@@ -1,7 +1,8 @@
 import { JComponent } from 'jgb-weapp';
 import { Accessors } from 'jgb-weapp/types/common';
 import { PropsDefinition } from 'jgb-weapp/types/JComponent';
-import { IAnyObject } from 'jgb-weapp/types/JPage';
+
+type IAnyObject = wxNS.IAnyObject;
 
 export function init(): void;
 
