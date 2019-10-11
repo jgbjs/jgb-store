@@ -5,12 +5,13 @@
   "repository": "git@github.com:jgbjs/jgb-store.git",
   "author": "蒋瑶 <landn172@gmail.com>",
   "license": "MIT",
-  "types": "types/index.d.ts",
+  "types": "lib/index.d.ts",
   "files": [
     "lib",
     "types"
   ],
   "scripts": {
+    "prepublish": "npm run build",
     "build": "tsc -p tsconfig.json",
     "test": "jest"
   },

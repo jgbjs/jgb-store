@@ -1,5 +1,9 @@
+/// <reference path="../types/extension.d.ts" />
+
 import { JComponent, JPage } from 'jgb-weapp';
 import { create } from './create';
+import { stateDiff as diff } from './diff';
+import { createStore } from './store';
 
 /**
  * 初始化store 注入
@@ -19,3 +23,5 @@ export function init() {
     return obj;
   });
 }
+
+export { diff, createStore };

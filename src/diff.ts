@@ -11,6 +11,9 @@ export function addDiffState(newState: IAnyObject, key: string, val: any) {
   key !== '' && (newState[key] = val);
 }
 
+/**
+ * 比较两个对象差异，最终以newState导出
+ */
 export function stateDiff(
   state: any,
   preState: any,

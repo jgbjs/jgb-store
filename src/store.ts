@@ -1,8 +1,43 @@
 import { IAnyObject } from 'jgb-weapp/types/JPage';
 import { IPageExtenstion } from './create';
 import { stateDiff, TYPE_OBJECT, TYPE_ARRAY, getType } from './diff';
-
 const innerInstances = new Map();
+
+type DataOption = Record<string, any>;
+type CustomOption = Record<string, any>;
+
+interface IStoreExt {
+  $update: InnerStore['update'];
+}
+
+type Instance<
+  TData extends DataOption,
+  TCustom extends CustomOption
+> = TCustom & Data<TData> & IStoreExt;
+
+interface Data<D extends DataOption> {
+  /**
+   *
+   * `data`
+   */
+  data: D;
+}
+
+type Options<
+  TData extends DataOption,
+  TCustom extends CustomOption
+> = (TCustom & Partial<Data<TData>>) & ThisType<Instance<TData, TCustom>>;
+
+/**
+ * 创建store
+ * */
+
+export function createStore<
+  TData extends DataOption,
+  TCustom extends CustomOption
+>(store: Options<TData, TCustom>): Options<TData, TCustom> & IStoreExt {
+  return store as any;
+}
 
 export class InnerStore {
   data: IAnyObject;
@@ -118,6 +153,3 @@ export function deepCopy(data: any) {
   }
   return data;
 }
-
-
-

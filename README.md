@@ -21,13 +21,13 @@ init();
 
 ```ts
 // store.ts
-import { IStore } from 'jgb-store';
+import { createStore } from 'jgb-store';
 
-export const store: IStore = {
+export const store =  createStore({
   data: {
     testStore: 1
   }
-};
+});
 ```
 
 ### 页面使用store
@@ -46,6 +46,8 @@ JPage({
     this.$store.data.testStore++;
     // 更新数据
     this.$update();
+    // 也可以在store中调用$update
+    //	store.$update();
   }
 });
 ```

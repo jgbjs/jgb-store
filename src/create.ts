@@ -1,4 +1,4 @@
-import { IStore } from '../types';
+import { IStore, IStoreUpdate } from '../types/extension';
 import { IAnyObject } from 'jgb-weapp/types/JPage';
 import { utils, JComponent } from 'jgb-weapp';
 import {
@@ -14,7 +14,7 @@ const page = Symbol('page');
 
 export interface IPageExtenstion {
   $store: InnerStore;
-  $update: (data?: IAnyObject) => Promise<IAnyObject>;
+  $update: IStoreUpdate;
   setData: JComponent['setData'];
   globalStore: IAnyObject;
   route: string;
@@ -27,12 +27,19 @@ export function create(
   const $store: IStore = opts.$store;
   const store = new InnerStore($store);
   const globalStore = getGlobalStore();
+  const storeUpdate = store.update.bind(store);
+
   opts.data = opts.data || {};
+
+  if (typeof $store.$update !== 'function') {
+    $store.$update = storeUpdate;
+  }
+
 
   if (type === 'Page') {
     hook(opts, 'onLoad', function(this: IPageExtenstion) {
       defineReadOnly(this, '$store', store);
-      defineReadOnly(this, '$update', store.update.bind(store));
+      defineReadOnly(this, '$update', storeUpdate);
       store.addInstance(this);
       globalStore.update = this.$update;
       this.globalStore = globalStore;
@@ -60,7 +67,7 @@ export function create(
       if (curPage.$store) {
         this.globalStore = curPage.globalStore;
         defineReadOnly(this, '$store', store);
-        defineReadOnly(this, '$update', store.update.bind(store));
+        defineReadOnly(this, '$update', storeUpdate);
         this.route = curPage.route;
         store.addInstance(this);
         getInitState($store.data, opts.data, opts.$useAll);

@@ -8,10 +8,11 @@ JComponent({
   attached() {
     console.log(this.data);
   },
-  methods:{
+  methods: {
     onTap() {
-      store.data.storeData = 'component'
-      this.$update()
+      store.data.storeData = 'component';
+      store.updateStore();
+      store.$update();
     }
   }
 });

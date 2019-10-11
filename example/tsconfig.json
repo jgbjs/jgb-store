@@ -12,6 +12,7 @@
     "importHelpers": true,
     "downlevelIteration": true,
     "moduleResolution": "node",
+    "declaration": false,
     "typeRoots": [
       "./node_modules/@types"
     ],
@@ -23,10 +24,10 @@
     ],
     "paths": {
       "tslib": [
-        "node_modules/tslib/tslib.d.ts"
+        "../node_modules/tslib/tslib.d.ts"
       ],
       "jgb-store": [
-        "../../types"
+        "../../lib"
       ]
     }
   }
