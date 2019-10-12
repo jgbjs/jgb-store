@@ -21,6 +21,12 @@ interface Data<D extends DataOption> {
    * `data`
    */
   data: D;
+
+  /**
+   * 监听数据变化，返回diff内容
+   * @param ctx Page or Component 的context
+   */
+  onChange?: (diff: IAnyObject, ctx: any) => void;
 }
 
 type Options<
@@ -31,7 +37,6 @@ type Options<
 /**
  * 创建store
  * */
-
 export function createStore<
   TData extends DataOption,
   TCustom extends CustomOption
@@ -44,7 +49,9 @@ export class InnerStore {
 
   constructor(private $store: any) {
     this.data = $store.data || {};
-    innerInstances.set($store, {});
+    if (!innerInstances.has($store)) {
+      innerInstances.set($store, {});
+    }
   }
 
   /**
@@ -56,17 +63,23 @@ export class InnerStore {
     // 获取当前页面所有关联的实例
     const vms: any[] = this.instances[route] || [];
     const storeData = getAllData(this.data);
-    vms.forEach(vm => {
+    for (const vm of vms) {
       let obj: IAnyObject = {};
-      if(vm.$useAll) {
+      if (vm.$useAll) {
         obj = storeData;
       } else {
         Object.keys(vm.data).forEach(
           key => storeData.hasOwnProperty(key) && (obj[key] = storeData[key])
         );
-      } 
-      promiseArr.push(setState(vm, obj));
-    });
+      }
+      promiseArr.push(
+        setState(vm, obj).then(diff => {
+          if (Object.keys(diff).length && this.$store.onChange) {
+            this.$store.onChange(diff, vm);
+          }
+        })
+      );
+    }
     return Promise.all(promiseArr);
   }
 
@@ -99,22 +112,24 @@ export function getGlobalStore(): IAnyObject {
   return getApp().globalStore || {};
 }
 
+const newState = Symbol()
+
 /**
  * 设置数据
  */
-function setState(vm: any, data: IAnyObject) {
-  vm._new_data = vm._new_data || {};
-  Object.assign(vm._new_data, data);
+function setState(vm: any, data: IAnyObject): Promise<IAnyObject> {
+  vm[newState] = vm[newState] || {};
+  Object.assign(vm[newState], data);
   return new Promise(resolve => {
-    if (Object.keys(vm._new_data).length > 0) {
-      const diffState = getDiffState(vm._new_data, vm.data);
-      vm._new_data = {};
+    if (Object.keys(vm[newState]).length > 0) {
+      const diffState = getDiffState(vm[newState], vm.data);
+      vm[newState] = {};
       if (Object.keys(diffState).length > 0) {
-        vm.setData(diffState, resolve);
+        vm.setData(diffState, () => resolve(diffState));
         return;
       }
     }
-    resolve();
+    resolve({});
   });
 }
 

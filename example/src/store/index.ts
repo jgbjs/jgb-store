@@ -6,8 +6,10 @@ const data = {
 
 export const store = createStore({
   data,
+  onChange(diff, ctx) {
+    console.log('diff =>', ctx);
+  },
   updateStore() {
-    console.log(this.data);
     this.$update();
   }
 });
