@@ -35,11 +35,12 @@ export function create(
     $store.$update = storeUpdate;
   }
 
-
   if (type === 'Page') {
     hook(opts, 'onLoad', function(this: IPageExtenstion) {
       defineReadOnly(this, '$store', store);
       defineReadOnly(this, '$update', storeUpdate);
+      defineReadOnly(this, '$useAll', !!opts.$useAll);
+
       store.addInstance(this);
       globalStore.update = this.$update;
       this.globalStore = globalStore;
@@ -68,6 +69,8 @@ export function create(
         this.globalStore = curPage.globalStore;
         defineReadOnly(this, '$store', store);
         defineReadOnly(this, '$update', storeUpdate);
+        defineReadOnly(this, '$useAll', !!opts.$useAll);
+
         this.route = curPage.route;
         store.addInstance(this);
         getInitState($store.data, opts.data, opts.$useAll);

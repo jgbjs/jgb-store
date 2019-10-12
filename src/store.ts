@@ -58,9 +58,13 @@ export class InnerStore {
     const storeData = getAllData(this.data);
     vms.forEach(vm => {
       let obj: IAnyObject = {};
-      Object.keys(vm.data).forEach(
-        key => storeData.hasOwnProperty(key) && (obj[key] = storeData[key])
-      );
+      if(vm.$useAll) {
+        obj = storeData;
+      } else {
+        Object.keys(vm.data).forEach(
+          key => storeData.hasOwnProperty(key) && (obj[key] = storeData[key])
+        );
+      } 
       promiseArr.push(setState(vm, obj));
     });
     return Promise.all(promiseArr);
