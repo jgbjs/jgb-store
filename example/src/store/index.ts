@@ -1,9 +1,12 @@
-import { IStore } from 'jgb-store';
+import { createStore } from 'jgb-store';
 
 const data = {
   storeData: 'store'
 };
 
-export const store: IStore<typeof data> = {
-  data: data
-};
+export const store = createStore({
+  data,
+  updateStore() {
+    this.$update();
+  }
+});

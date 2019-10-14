@@ -9,6 +9,9 @@ JPage({
   },
   onLoad() {
     console.log(this.data);
+    this.$watchStoreChange((diff: any) => {
+      console.log('diff', diff);
+    });
   },
   onTap() {
     this.$store.data.storeData = 'page';

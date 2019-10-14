@@ -1,16 +1,19 @@
 import { JComponent } from 'jgb-weapp';
 import { Accessors } from 'jgb-weapp/types/common';
 import { PropsDefinition } from 'jgb-weapp/types/JComponent';
-import { IAnyObject } from 'jgb-weapp/types/JPage';
 
-export function init(): void;
+type IAnyObject = wxNS.IAnyObject;
 
 /**
  * westore 定义的数据结构
  */
 interface IStore<D = IAnyObject> {
   data: D;
-  [method: string]: Function | IAnyObject;
+  [method: string]: any;
+}
+
+interface IStoreUpdate {
+  (data?: IAnyObject): Promise<IAnyObject>;
 }
 
 interface IStoreExtensionOptions {
@@ -29,7 +32,11 @@ interface IStoreExtensionInstance {
    * 更新数据
    * @returns Promise<diff> 返回差异
    */
-  $update: (data?: IAnyObject) => Promise<IAnyObject>;
+  $update: IStoreUpdate;
+  /**
+   * 监听store变化
+   */
+  $watchStoreChange(diff: IAnyObject): void;
 }
 
 declare module 'jgb-weapp/types/JComponent' {

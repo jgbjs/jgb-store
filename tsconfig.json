@@ -4,7 +4,7 @@
     "noImplicitThis": true,
     "module": "commonjs",
     "target": "es5",
-    "declarationMap": false,
+    "declaration": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "downlevelIteration": true,
@@ -24,7 +24,6 @@
     // "strict": true,
     // "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "declaration": false,
     "sourceMap": false,
     "inlineSourceMap": false,
     // "typeRoots": [
