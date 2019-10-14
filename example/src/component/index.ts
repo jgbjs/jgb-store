@@ -7,6 +7,9 @@ JComponent({
   data: {},
   attached() {
     console.log(this.data);
+    this.$watchStoreChange(() => {
+      console.log('component: watchStoreChange');
+    });
   },
   methods: {
     onTap() {

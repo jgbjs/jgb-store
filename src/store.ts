@@ -21,18 +21,17 @@ interface Data<D extends DataOption> {
    * `data`
    */
   data: D;
-
-  /**
-   * 监听数据变化，返回diff内容
-   * @param ctx Page or Component 的context
-   */
-  onChange?: (diff: IAnyObject, ctx: any) => void;
 }
 
 type Options<
   TData extends DataOption,
   TCustom extends CustomOption
 > = (TCustom & Partial<Data<TData>>) & ThisType<Instance<TData, TCustom>>;
+
+/**
+ * store change callback
+ */
+type IDiffCallback = (diff: IAnyObject) => void;
 
 /**
  * 创建store
@@ -46,6 +45,7 @@ export function createStore<
 
 export class InnerStore {
   data: IAnyObject;
+  private cbs = [] as { cb: IDiffCallback; ctx: any }[];
 
   constructor(private $store: any) {
     this.data = $store.data || {};
@@ -74,8 +74,10 @@ export class InnerStore {
       }
       promiseArr.push(
         setState(vm, obj).then(diff => {
-          if (Object.keys(diff).length && this.$store.onChange) {
-            this.$store.onChange(diff, vm);
+          if (!diff || Object.keys(diff).length === 0) return;
+          const cbs = this.cbs.filter(({ ctx }) => ctx === vm);
+          for (const { ctx, cb } of cbs) {
+            cb.call(ctx, diff);
           }
         })
       );
@@ -85,6 +87,16 @@ export class InnerStore {
 
   get instances(): IAnyObject {
     return innerInstances.get(this.$store) || {};
+  }
+
+  /**
+   * 绑定store change回调
+   */
+  onChange(cb: IDiffCallback, ctx: any) {
+    if (typeof cb !== 'function')
+      throw new Error(`onChange callback should be a Function`);
+
+    this.cbs.push({ cb, ctx });
   }
 
   /**
@@ -112,7 +124,7 @@ export function getGlobalStore(): IAnyObject {
   return getApp().globalStore || {};
 }
 
-const newState = Symbol()
+const newState = Symbol();
 
 /**
  * 设置数据

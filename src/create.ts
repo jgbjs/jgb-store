@@ -40,6 +40,9 @@ export function create(
       defineReadOnly(this, '$store', store);
       defineReadOnly(this, '$update', storeUpdate);
       defineReadOnly(this, '$useAll', !!opts.$useAll);
+      defineReadOnly(this, '$watchStoreChange', function(this: any, cb: any) {
+        store.onChange(cb, this);
+      });
 
       store.addInstance(this);
       globalStore.update = this.$update;
@@ -59,23 +62,25 @@ export function create(
   }
 
   if (type === 'Component') {
+    hook(opts, 'created', function(this: IPageExtenstion) {
+      defineReadOnly(this, '$store', store);
+      defineReadOnly(this, '$update', storeUpdate);
+      defineReadOnly(this, '$useAll', !!opts.$useAll);
+      defineReadOnly(this, '$watchStoreChange', function(this: any, cb: any) {
+        store.onChange(cb, this);
+      });
+    });
     // Component.attached ->  Page.onLoad -> Component.ready
-    // 要在ready注册
+    // 获取当前页面路径要在ready注册
     hook(opts, 'ready', function(this: IPageExtenstion) {
       const curPage: IPageExtenstion = getPage() as any;
       // @ts-ignore
       this[page] = curPage;
-      if (curPage.$store) {
-        this.globalStore = curPage.globalStore;
-        defineReadOnly(this, '$store', store);
-        defineReadOnly(this, '$update', storeUpdate);
-        defineReadOnly(this, '$useAll', !!opts.$useAll);
-
-        this.route = curPage.route;
-        store.addInstance(this);
-        getInitState($store.data, opts.data, opts.$useAll);
-        this.setData(opts.data);
-      }
+      this.globalStore = curPage.globalStore;
+      this.route = curPage.route;
+      store.addInstance(this);
+      getInitState($store.data, opts.data, opts.$useAll);
+      this.setData(opts.data);
     });
 
     hook(opts, 'detached', function(this: IPageExtenstion) {

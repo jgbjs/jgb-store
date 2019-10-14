@@ -33,6 +33,10 @@ interface IStoreExtensionInstance {
    * @returns Promise<diff> 返回差异
    */
   $update: IStoreUpdate;
+  /**
+   * 监听store变化
+   */
+  $watchStoreChange(diff: IAnyObject): void;
 }
 
 declare module 'jgb-weapp/types/JComponent' {
