@@ -5,7 +5,13 @@ JPage({
   $useAll: true,
   $store: store,
   data: {
-    index: 0
+    index: 0,
+  },
+  computed: {
+    watchStoreData(): string {
+      // @ts-ignore
+      return this.data.storeData + '1';
+    },
   },
   onLoad() {
     console.log(this.data);
@@ -19,7 +25,7 @@ JPage({
   },
   toSamePage() {
     jgb.navigateTo({
-      url: `/pages/index/index?id=${Math.random()}`
+      url: `/pages/index/index?id=${Math.random()}`,
     });
-  }
+  },
 });

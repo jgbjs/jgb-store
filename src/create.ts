@@ -1,18 +1,13 @@
 import { IStore, IStoreUpdate } from '../types/extension';
 import { IAnyObject } from 'jgb-weapp/types/JPage';
 import { utils, JComponent } from 'jgb-weapp';
-import {
-  InnerStore,
-  getGlobalStore,
-  getPage,
-  deepCopy,
-  getAllData
-} from './store';
+import { InnerStore, getGlobalStore, getPage, deepCopy, getAllData } from './store';
 
 const hook = utils.hook;
 const page = Symbol('page');
 
 export interface IPageExtenstion {
+  [x: string]: any;
   $store: InnerStore;
   $update: IStoreUpdate;
   setData: JComponent['setData'];
@@ -20,16 +15,11 @@ export interface IPageExtenstion {
   route: string;
 }
 
-export function create(
-  opts: IAnyObject,
-  type: 'Page' | 'Component'
-): IAnyObject {
+export function create(opts: IAnyObject, type: 'Page' | 'Component'): IAnyObject {
   const $store: IStore = opts.$store;
   const store = new InnerStore($store);
   const globalStore = getGlobalStore();
   const storeUpdate = store.update.bind(store);
-
-  opts.data = opts.data || {};
 
   if (typeof $store.$update !== 'function') {
     $store.$update = storeUpdate;
@@ -47,8 +37,9 @@ export function create(
       store.addInstance(this);
       globalStore.update = this.$update;
       this.globalStore = globalStore;
-      getInitState($store.data, opts.data, opts.$useAll);
-      this.setData(opts.data);
+      const to = this.data;
+      getInitState($store.data, to, opts.$useAll);
+      this.setData(to);
     });
 
     hook(opts, 'onShow', function(this: IPageExtenstion) {
@@ -70,6 +61,13 @@ export function create(
         store.onChange(cb, this);
       });
     });
+
+    hook(opts, 'attached', function(this: IPageExtenstion) {
+      const to = this.data;
+      getInitState($store.data, to, opts.$useAll);
+      this.setData(to);
+    });
+
     // Component.attached ->  Page.onLoad -> Component.ready
     // 获取当前页面路径要在ready注册
     hook(opts, 'ready', function(this: IPageExtenstion) {
@@ -78,9 +76,8 @@ export function create(
       this[page] = curPage;
       this.globalStore = curPage.globalStore;
       this.route = curPage.route;
+
       store.addInstance(this);
-      getInitState($store.data, opts.data, opts.$useAll);
-      this.setData(opts.data);
     });
 
     hook(opts, 'detached', function(this: IPageExtenstion) {
@@ -99,7 +96,7 @@ function getInitState(from: IAnyObject, to: IAnyObject, useAll: boolean) {
     Object.assign(to, deepCopy(fromObj));
   } else {
     Object.keys(to).forEach(
-      key => fromObj.hasOwnProperty(key) && (to[key] = deepCopy(fromObj[key]))
+      key => fromObj.hasOwnProperty(key) && (to[key] = deepCopy(fromObj[key])),
     );
   }
 }
@@ -108,6 +105,6 @@ function defineReadOnly(ctx: any, name: string, value: any) {
   Object.defineProperty(ctx, name, {
     get() {
       return value;
-    }
+    },
   });
 }
